@@ -151,7 +151,7 @@ Load and clean the data for regression analysis (i.e. convert numeric to factor 
 
 load data
 ```{r load in child bw data}
-birthweight_data <- read_csv("/Users/anika/Desktop/building_blocks/HW6/am5088_hw6/am5088_hw6_files/birthweight.csv")
+birthweight_data <- read_csv("/Users/anika/Desktop/building_blocks/HW6/am5088_hw6/birthweight.csv")
 ```
 
 data wrangling + get rid of missing data
@@ -193,7 +193,7 @@ ggplot(birthweight_with_residuals, aes(x = pred, y = resid)) +
     y = "Residuals"
   )
 ```
-My plot looks fine and nothing too out of the ordinary. There is a clear clustering around 
+My plot looks fine and nothing too out of the ordinary. There is a clear clustering around the line
 
 
 Hi TA, this is a quick comment that for some reason (probably because I used an absolute path sorry), my code runs but then sometimes it then tells me that the file doesn't exist and then I go to the folder and it is deleted? Not by me, so then I redownload it in and run it and it works. I'm not sure what the reason is but it's probably the reason not to rely on absolute paths, but also I was running into errors reading in the data and on a time crunch. Just writing this here in case that causes an error too. I have screenshots of it working. Thanks! -Anika
