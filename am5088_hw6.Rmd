@@ -1,0 +1,72 @@
+---
+title: "am5088_hw6"
+author: "Anika Mitchell"
+date: "2024-12-01"
+output: html_document
+---
+Load libraries
+```{r setup}
+library(tidyverse)
+library(dplyr)
+library(modelr)
+```
+
+Load data
+```{r load data}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2017-01-01",
+    date_max = "2017-12-31") %>%
+  mutate(
+    name = recode(id, USW00094728 = "CentralPark_NY"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) %>%
+  select(name, id, everything())
+```
+
+Use 5000 bootstrap samples and, for each bootstrap sample, produce estimates of these two quantities
+```{r bootstrap and model}
+set.seed(123)
+boot_results = map(1:5000, ~{
+boot_sample = weather_df %>% sample_frac(size = 1, replace = TRUE)
+lm(tmax ~ tmin, data = boot_sample)
+model = lm(tmax ~ tmin, data = boot_sample)
+tibble(
+  rsq = broom::glance(model)$r.squared,
+  log_beta0_beta1 = log(broom::tidy(model)$estimate[1] * broom::tidy(model)$estimate[2])
+  )
+})
+boot_results_df = tibble(
+rsq = map_dbl(boot_results, "rsq"),
+log_beta0_beta1 = map_dbl(boot_results, "log_beta0_beta1")
+)
+  
+```
+
+Plot distribution for R^2
+```{r squared plot}
+ggplot(boot_results_df, aes(x = rsq)) +
+geom_histogram(bins = 50) +
+theme_minimal() +
+labs(title = "Distribution of R^2 (bootstrap)", x = "R^2", y = "Count")
+
+```
+
+Plot distribution for 
+```{r log plot}
+ggplot(boot_results_df, aes(x = log_beta0_beta1)) +
+geom_histogram(bins = 50) +
+theme_minimal() +
+labs(title = "Distribution of log(β0 * β1) (bootsrap)", x = "log(β0 * β1)", y = "Count")
+
+```
+
+**Both distributions look pretty normal.** 
+
+```{r}
+
+```
+
+
