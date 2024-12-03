@@ -9,10 +9,11 @@ Load libraries
 library(tidyverse)
 library(dplyr)
 library(modelr)
+library(purrr)
 ```
 
 Load data
-```{r load data}
+```{r load cp data}
 weather_df = 
   rnoaa::meteo_pull_monitors(
     c("USW00094728"),
@@ -64,9 +65,32 @@ labs(title = "Distribution of log(β0 * β1) (bootsrap)", x = "log(β0 * β1)", 
 ```
 
 **Both distributions look pretty normal.** 
-
-```{r}
-
+Read in data
+```{r load wpost data}
+wposthomicide_data = read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv")
 ```
 
+Create a city_state variable (e.g. “Baltimore, MD”), and a binary variable indicating whether the homicide is solved. Omit cities Dallas, TX; Phoenix, AZ; and Kansas City, MO – these don’t report victim race. Also omit Tulsa, AL – this is a data entry mistake. For this problem, limit your analysis those for whom victim_race is white or black. Be sure that victim_age is numeric.
+
+Data wrangling/cleaning
+```{r clean up data}
+cleaned_homicide_data <- wposthomicide_data |>
+  mutate(
+  city_state = paste(city, state, sep = ", "),
+  resolved = if_else(disposition == "Closed by arrest", 1, 0),
+  victim_race = factor(victim_race),
+  victim_age = as.numeric(victim_age)
+  ) |>
+  filter(
+    !city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", "Tulsa, AL"),
+    victim_race %in% c("White", "Black")
+  )
+```
+
+For the city of Baltimore, MD, use the glm function to fit a logistic regression with resolved vs unresolved as the outcome and victim age, sex and race as predictors.
+
+```{r glm regression}
+
+
+```
 
